@@ -28,13 +28,12 @@ def _LoadClass(path,verbose=True):
 
 def LoadClass(path,verbose=True,LoadFnc=_LoadClass):
     if os.path.isfile(path):
-        print("File "+path+" is present")
+        print(f"File {path} is present")
         try:
             return LoadFnc(path=path,verbose=verbose)
         except Exception as e:
-            print("But failed to load: \n"+str(e))
+            print(f"But failed to load: \n{str(e)}")
             return False
     else:
         print("File not present")
         return False
-
