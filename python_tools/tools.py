@@ -94,7 +94,7 @@ def short_SciNot(value):
     except:
         unit = None
         pass
-    val = "%.e"%(value)
+    val = "%.e"%(float(value))
     val_str = str(val).replace("+","")
     ant_val_str,post_val_str = val_str.split("e")
     power_sign = ""
