@@ -58,6 +58,25 @@ def Read_Two_Column_File(file_name):
 
     return np.array(x),np.array(y)
 
+def Read_Column_File(file_name):
+    """
+    Generalised version of Read_Two_Column_File 
+    for any number of columns
+    """
+    with open(file_name, 'r') as data:
+        read_data = None
+        for line in data.readlines():
+            if line[0]== "#":
+                continue
+            p = line.split()
+            if read_data is None:
+                read_data = [[] for _ in range(len(p))]
+            #print(read_data)
+            for ip,pp in enumerate(p):
+                read_data[ip].append(float(pp))
+    return np.array(read_data)
+
+
 def Write_Two_Column_File(x,y,out_file):
     assert len(x)==len(y)
     with open(out_file,"w") as file:
