@@ -84,3 +84,56 @@ def get_fwhm(profile_1D,x_projdata=None):
     fwhm_pix = (x_projdata[x0:x1][int(fwhm_i)]-x_projdata[x0:x1][0])
     return fwhm_pix
     
+
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+def plot_comp_two_images(im1,im2,extent=None,xlbl=None,ylbl=None,ttl1=None,ttl2=None):
+    """Simple plotting routine to compare two images
+    """
+    im1 = np.array(im1)
+    im2 = np.array(im2)
+    
+    assert im1.shape==im2.shape
+
+    fig, axis = plt.subplots(1,3,figsize=(18,8))
+    
+    ax  = axis[0]
+    im0 = ax.matshow(im1,origin='lower',extent=extent,cmap="hot")
+    if xlbl:
+        ax.set_xlabel(xlbl)
+    if ylbl:
+        ax.set_ylabel(ylbl)
+    if ttl1:
+        ax.set_title(ttl1)
+
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    fig.colorbar(im0, cax=cax, orientation='vertical')
+
+    ax  = axis[1]
+    im0 = ax.matshow(im2,origin='lower',extent=extent,cmap="hot")
+    if xlbl:
+        ax.set_xlabel(xlbl)
+    if ylbl:
+        ax.set_ylabel(ylbl)
+    if ttl2:
+        ax.set_title(ttl2)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    fig.colorbar(im0, cax=cax, orientation='vertical')
+
+    ax  = axis[2]
+    im0 = ax.matshow(im1-im2,origin='lower',extent=extent,cmap="bwr")
+    if xlbl:
+        ax.set_xlabel(xlbl)
+    if ylbl:
+        ax.set_ylabel(ylbl)
+    if ttl1 and ttl2:
+        ax.set_title(ttl1+" - "+ttl2)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    fig.colorbar(im0, cax=cax, orientation='vertical')
+    return fig
+
