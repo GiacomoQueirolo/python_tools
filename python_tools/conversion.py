@@ -81,6 +81,18 @@ def e1e2_from_qphi(q,phi,deg=True):
     e2 = np.sin(2 * phi)*c
     return e1, e2
 
+def find_index(x,arr):
+    """
+    Find linear interpolation of the index given a value x 
+    with respect to a grid defined by the array arr
+    """
+    arr = np.array(arr)
+    #ind0 = np.where((arr-x)<0)[0][-1] #works but only for x being float
+    # Find insertion index
+    i = np.searchsorted(arr, x) - 1
+    # Clip to valid range
+    ind0 = np.clip(i, 0, len(arr) - 2)
+    return ind0 + (x-arr[ind0])/(arr[ind0+1] -arr[ind0])
 
 ### test: verified
 import copy
