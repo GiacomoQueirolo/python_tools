@@ -89,7 +89,7 @@ def get_fwhm(profile_1D,x_projdata=None):
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-def plot_comp_two_images(im1,im2,extent=None,xlbl=None,ylbl=None,ttl1=None,ttl2=None):
+def plot_comp_two_images(im1,im2,extent=None,xlbl=None,ylbl=None,ttl1=None,ttl2=None,colorbarlbl=None):
     """Simple plotting routine to compare two images
     """
     im1 = np.array(im1)
@@ -110,7 +110,7 @@ def plot_comp_two_images(im1,im2,extent=None,xlbl=None,ylbl=None,ttl1=None,ttl2=
 
     divider = make_axes_locatable(ax)
     cax = divider.append_axes('right', size='5%', pad=0.05)
-    fig.colorbar(im0, cax=cax, orientation='vertical')
+    fig.colorbar(im0, cax=cax, orientation='vertical',label=colorbarlbl)
 
     ax  = axis[1]
     im0 = ax.matshow(im2,origin='lower',extent=extent,cmap="hot")
@@ -122,10 +122,13 @@ def plot_comp_two_images(im1,im2,extent=None,xlbl=None,ylbl=None,ttl1=None,ttl2=
         ax.set_title(ttl2)
     divider = make_axes_locatable(ax)
     cax = divider.append_axes('right', size='5%', pad=0.05)
-    fig.colorbar(im0, cax=cax, orientation='vertical')
+    fig.colorbar(im0, cax=cax, orientation='vertical',label=colorbarlbl)
 
     ax  = axis[2]
-    im0 = ax.matshow(im1-im2,origin='lower',extent=extent,cmap="bwr")
+    diff = im1-im2
+    # define vmin/vmax in order to have 0==white
+    vm = 3*np.std(diff)
+    im0  = ax.matshow(im1-im2,origin='lower',extent=extent,cmap="bwr",vmax=vm,vmin=-vm)
     if xlbl:
         ax.set_xlabel(xlbl)
     if ylbl:
@@ -134,6 +137,10 @@ def plot_comp_two_images(im1,im2,extent=None,xlbl=None,ylbl=None,ttl1=None,ttl2=
         ax.set_title(ttl1+" - "+ttl2)
     divider = make_axes_locatable(ax)
     cax = divider.append_axes('right', size='5%', pad=0.05)
-    fig.colorbar(im0, cax=cax, orientation='vertical')
+    colorbarlbl_diff = None
+    if colorbarlbl:
+        colorbarlbl_diff = r"$\Delta$"+colorbarlbl
+    fig.colorbar(im0, cax=cax, orientation='vertical',label=colorbarlbl_diff)
+    fig.tight_layout()
     return fig
 
