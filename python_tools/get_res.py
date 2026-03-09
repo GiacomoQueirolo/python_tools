@@ -35,5 +35,5 @@ def LoadClass(path,verbose=True,LoadFnc=_LoadClass):
             print(f"But failed to load: \n{str(e)}")
             return False
     else:
-        print("File not present")
+        print(f"File {path} not present")
         return False

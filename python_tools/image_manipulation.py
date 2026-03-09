@@ -128,7 +128,7 @@ def plot_comp_two_images(im1,im2,extent=None,xlbl=None,ylbl=None,ttl1=None,ttl2=
     diff = im1-im2
     # define vmin/vmax in order to have 0==white
     vm = 3*np.std(diff)
-    im0  = ax.matshow(im1-im2,origin='lower',extent=extent,cmap="bwr",vmax=vm,vmin=-vm)
+    im0  = ax.matshow(diff,origin='lower',extent=extent,cmap="bwr",vmax=vm,vmin=-vm)
     if xlbl:
         ax.set_xlabel(xlbl)
     if ylbl:
