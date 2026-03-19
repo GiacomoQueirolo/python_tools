@@ -12,6 +12,11 @@ def get_dir_basename(FILE):
     base = os.path.basename(FILE)
     return dir, base
     
+def convert_error_to_warning(exception):
+    warning = RuntimeWarning(*exception.args)
+    warning.with_traceback(exception.__traceback__)
+    return warning
+    
 def extract_xy_from_file(file_name,index_x=1,index_y=2):
     """
     Extracts X_IMAGE (index_x_nd column) and Y_IMAGE (index_y_nd column) from a data file.
@@ -149,3 +154,4 @@ def ensure_unit(variable,unit):
     except AttributeError:
         # variable is dimensionless
         return variable*unit
+
