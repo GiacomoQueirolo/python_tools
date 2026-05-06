@@ -109,7 +109,6 @@ def get_default_args(func):
         if v.default is not inspect.Parameter.empty
     }
 
-
 def short_SciNot(value):
     #short scientific notation
     try:
@@ -118,11 +117,21 @@ def short_SciNot(value):
     except:
         unit = None
         pass
-    val_str = f"{value:.2e}"
+    val_str = f"{float(value):.2e}"
     if unit:
         val_str+= "["+str(unit)+"]"
     return val_str
-
+    """
+    val = "%.e"%(float(value))
+    val_str = str(val).replace("+","")
+    ant_val_str,post_val_str = val_str.split("e")
+    power_sign = ""
+    if post_val_str[0]=="-":
+        power_sign   = "-"
+        post_val_str = post_val_str[1:]
+    val_str = ant_val_str+"e"+power_sign+post_val_str.lstrip("0")
+    
+    """
 
 
 def to_dimless(variable,verbose=False):

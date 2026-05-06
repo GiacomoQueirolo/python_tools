@@ -11,7 +11,6 @@ def get_header_entry(header,entry):
 
 
 def load_fits(image_path,HDU=0):
-    
     #load the image and read it as numpy array
     with fits.open(image_path,ignore_missing_end=True) as hdulist:
         image   = hdulist[HDU].data
@@ -22,8 +21,6 @@ def load_fitshead(image_path,HDU=0):
     with fits.open(image_path,ignore_missing_end=True) as hdulist:
         head   = hdulist[HDU].header
     return head
-
-
 
 def fits_with_copied_hdr(data,fits_parent_path,data_object="",data_history="",fits_res_namepath=None,overwrite=True,verbose=True):
     scihdr = load_fitshead(fits_parent_path,HDU=0)
@@ -54,6 +51,22 @@ def fits_with_hdr(data,header,fits_res_namepath=None,overwrite=True,verbose=True
         hdu.writeto(fits_res_namepath, overwrite=overwrite)
         return 0
 
+def fits_with_hdr_list(data,header_list,fits_res_namepath=None,overwrite=True,verbose=True):
+    # by default the first is the primary one
+    primary_hdu = fits.PrimaryHDU(data=data,header=header_list[0])
+    hdu_list    = [primary_hdu]
+    for hd in header_list[1:]:
+        hdu_i = fits.ImageHDU(header=hd)
+        hdu_list.append(hdu_i)
+    hdul = fits.HDUList(hdu_list)
+    if fits_res_namepath is None:
+        return hdul
+    else:
+        if verbose:
+            print("Saving file "+fits_res_namepath)
+        hdul.writeto(fits_res_namepath, overwrite=overwrite)
+        return 0
+        
 def update_fits_hdr(file_path,new_header):
     data = load_fits(file_path)
     hdu  = fits.PrimaryHDU(data=data,header=new_header)
