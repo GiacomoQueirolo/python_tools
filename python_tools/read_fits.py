@@ -52,11 +52,32 @@ def fits_with_hdr(data,header,fits_res_namepath=None,overwrite=True,verbose=True
         return 0
 
 def fits_with_hdr_list(data,header_list,fits_res_namepath=None,overwrite=True,verbose=True):
-    # by default the first is the primary one
-    primary_hdu = fits.PrimaryHDU(data=data,header=header_list[0])
+    # data can be a list - in this case, have to have align it with the header 
+    if type(data) is list:
+        if len(data)==len(header_list)-1:
+            if verbose:
+                print("We assume to have a general header and individual headers for the data slices")
+            data = [None,*data]
+        elif len(data)== len(header_list):
+            if verbose:
+                print("We assume to have 1 header for each data - need to create an empty one for the PrimaryHDU")
+            header_list= [fits.Header(),*header_list]
+        else:
+            raise ValueError(f"Input data can be a list, but have to be either same lenght of the header list, or 1 less than that")
+            
+    # by default the first is the primary one - must have no data
+    primary_hdu = fits.PrimaryHDU(header=header_list[0])
+     
     hdu_list    = [primary_hdu]
-    for hd in header_list[1:]:
-        hdu_i = fits.ImageHDU(header=hd)
+    for i,hd in enumerate(header_list[1:]):        
+        if type(data) is list:
+                di = data[i]
+        else:
+            if i==0:
+                di = data
+            else:
+                di = None    
+        hdu_i = fits.ImageHDU(data=di,header=hd)
         hdu_list.append(hdu_i)
     hdul = fits.HDUList(hdu_list)
     if fits_res_namepath is None:
