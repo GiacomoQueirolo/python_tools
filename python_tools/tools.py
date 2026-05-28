@@ -1,5 +1,7 @@
 import os
 import json
+import base64
+import hashlib
 import inspect
 import numpy as np
 import pathlib as pth
@@ -157,3 +159,19 @@ def ensure_unit(variable,unit):
         # variable is dimensionless
         return variable*unit
 
+def to_uid(obj, digits=None) -> int:
+    # convert any object (ideally: identity) into hash
+    serialised = repr(obj).encode()
+    h = hashlib.md5(serialised).hexdigest()
+    if digits:
+        h = h[:digits]
+    return int(h, 16)
+
+
+def to_uid_base64(obj, n_chars=6) -> str:
+    # convert any object (ideally: identity) into base64 hash
+    h = hashlib.md5(repr(obj).encode()).digest()  
+    b64 = base64.urlsafe_b64encode(h).decode()    
+    if n_chars:
+        b64 = b64[:n_chars]
+    return b64
