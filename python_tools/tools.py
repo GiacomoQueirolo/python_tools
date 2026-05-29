@@ -161,6 +161,8 @@ def ensure_unit(variable,unit):
 
 def to_uid(obj, digits=None) -> int:
     # convert any object (ideally: identity) into hash
+    if type(obj)==dict:
+        obj = sorted(obj.items())
     serialised = repr(obj).encode()
     h = hashlib.md5(serialised).hexdigest()
     if digits:
@@ -170,6 +172,8 @@ def to_uid(obj, digits=None) -> int:
 
 def to_uid_base64(obj, n_chars=6) -> str:
     # convert any object (ideally: identity) into base64 hash
+    if type(obj)==dict:
+        obj = sorted(obj.items())
     h = hashlib.md5(repr(obj).encode()).digest()  
     b64 = base64.urlsafe_b64encode(h).decode()    
     if n_chars:
