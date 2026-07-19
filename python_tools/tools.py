@@ -206,7 +206,7 @@ def dict_equal(a, b, rtol=1e-9, atol=0.0, _path="",ret_diff_list=False):
             diffs.append(f"{_path}.{k}: only in second")
         for k in keys_a & keys_b:
             _, sub = dict_equal(a[k], b[k], rtol=rtol, atol=atol,
-                                _path=f"{_path}.{k}")
+                                _path=f"{_path}.{k}",ret_diff_list=True)
             diffs.extend(sub)
 
     # ── both lists/tuples ─────────────────────────────────────────────────────
@@ -216,7 +216,7 @@ def dict_equal(a, b, rtol=1e-9, atol=0.0, _path="",ret_diff_list=False):
         else:
             for i, (ai, bi) in enumerate(zip(a, b)):
                 _, sub = dict_equal(ai, bi, rtol=rtol, atol=atol,
-                                    _path=f"{_path}[{i}]")
+                                    _path=f"{_path}[{i}]",ret_diff_list=True)
                 diffs.extend(sub)
 
     # ── numpy arrays ──────────────────────────────────────────────────────────
