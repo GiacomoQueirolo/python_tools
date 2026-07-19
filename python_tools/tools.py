@@ -179,3 +179,74 @@ def to_uid_base64(obj, n_chars=6) -> str:
     if n_chars:
         b64 = b64[:n_chars]
     return b64
+    
+
+# obtained with Claude
+def dict_equal(a, b, rtol=1e-9, atol=0.0, _path="",ret_diff_list=False):
+    """
+    Recursively compare two objects (dicts, lists, arrays, scalars).
+    Returns (True, []) if equal, (False, [list of differing paths]) if not.
+
+    Parameters
+    ----------
+    a, b   : objects to compare
+    rtol   : relative tolerance for float comparison
+    atol   : absolute tolerance for float comparison
+    _path  : internal, tracks key path for reporting
+    ret_diff_list: bool, if False return is only True or False
+    """
+    diffs = []
+
+    # ── both dicts ────────────────────────────────────────────────────────────
+    if isinstance(a, dict) and isinstance(b, dict):
+        keys_a, keys_b = set(a.keys()), set(b.keys())
+        for k in keys_a - keys_b:
+            diffs.append(f"{_path}.{k}: only in first")
+        for k in keys_b - keys_a:
+            diffs.append(f"{_path}.{k}: only in second")
+        for k in keys_a & keys_b:
+            _, sub = dict_equal(a[k], b[k], rtol=rtol, atol=atol,
+                                _path=f"{_path}.{k}")
+            diffs.extend(sub)
+
+    # ── both lists/tuples ─────────────────────────────────────────────────────
+    elif isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+        if len(a) != len(b):
+            diffs.append(f"{_path}: length {len(a)} vs {len(b)}")
+        else:
+            for i, (ai, bi) in enumerate(zip(a, b)):
+                _, sub = dict_equal(ai, bi, rtol=rtol, atol=atol,
+                                    _path=f"{_path}[{i}]")
+                diffs.extend(sub)
+
+    # ── numpy arrays ──────────────────────────────────────────────────────────
+    elif isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
+        a_arr = np.asarray(a)
+        b_arr = np.asarray(b)
+        if a_arr.shape != b_arr.shape:
+            diffs.append(f"{_path}: shape {a_arr.shape} vs {b_arr.shape}")
+        elif not np.allclose(a_arr, b_arr, rtol=rtol, atol=atol, equal_nan=True):
+            n_diff = np.sum(~np.isclose(a_arr, b_arr, rtol=rtol, atol=atol,
+                                        equal_nan=True))
+            diffs.append(f"{_path}: arrays differ in {n_diff}/{a_arr.size} elements")
+
+    # ── floats ────────────────────────────────────────────────────────────────
+    elif isinstance(a, float) and isinstance(b, float):
+        if not (np.isnan(a) and np.isnan(b)):
+            if not np.isclose(a, b, rtol=rtol, atol=atol):
+                diffs.append(f"{_path}: {a} vs {b}")
+
+    # ── type mismatch ─────────────────────────────────────────────────────────
+    elif type(a) != type(b):
+        diffs.append(f"{_path}: type {type(a).__name__} vs {type(b).__name__}")
+
+    # ── everything else (int, str, bool, None, ...) ───────────────────────────
+    else:
+        if a != b:
+            diffs.append(f"{_path}: {a!r} vs {b!r}")
+
+    equal = len(diffs) == 0
+    if ret_diff_list:
+        return equal, diffs
+    else:
+        return equal
