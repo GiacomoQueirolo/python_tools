@@ -1,4 +1,4 @@
-import os
+import os,sys
 import json
 import base64
 import hashlib
@@ -250,3 +250,18 @@ def dict_equal(a, b, rtol=1e-9, atol=0.0, _path="",ret_diff_list=False):
         return equal, diffs
     else:
         return equal
+
+# define decorator to silence prints output of functions
+def silencer(f):
+    def silenced_function(*args,**kwargs):
+        verbose = kwargs.get("verbose",True)
+        if verbose:
+            return f(*args,**kwargs)
+        else:
+            print(f"Running {f.__name__} silently...")
+            old_stdout = sys.stdout
+            sys.stdout = open(os.devnull,"w")
+            ret= f(*args,**kwargs)
+            sys.stdout = old_stdout
+            return ret
+    return silenced_function
