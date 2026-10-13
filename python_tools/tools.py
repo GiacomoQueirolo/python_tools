@@ -111,7 +111,7 @@ def get_default_args(func):
         if v.default is not inspect.Parameter.empty
     }
 
-def short_SciNot(value):
+def short_SciNot(value,_sig_fig=2):
     #short scientific notation
     try:
         unit  = value.unit
@@ -119,7 +119,7 @@ def short_SciNot(value):
     except:
         unit = None
         pass
-    val_str = f"{float(value):.2e}"
+    val_str = f"{float(value):.{int(_sig_fig)}e}"
     if unit:
         val_str+= "["+str(unit)+"]"
     return val_str
@@ -185,8 +185,12 @@ def to_uid_base64(obj, n_chars=6) -> str:
 def dict_equal(a, b, rtol=1e-9, atol=0.0, _path="",ret_diff_list=False):
     """
     Recursively compare two objects (dicts, lists, arrays, scalars).
-    Returns (True, []) if equal, (False, [list of differing paths]) if not.
-
+    
+    if not ret_diff_list (default):
+        Returns True if equal, False if not.
+    else:
+        Returns (True, []) if equal, (False, [list of differing paths]) if not.
+    
     Parameters
     ----------
     a, b   : objects to compare
